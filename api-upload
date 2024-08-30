@@ -1,0 +1,32 @@
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const csv = require('csv-parser');
+const { v4: uuidv4 } = require('uuid');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+router.post('/upload', upload.single('csv'), async (req, res) => {
+  try {
+    const csvData = [];
+    const requestId = uuidv4();
+
+    req.file.buffer.toString().split('\n').forEach((line) => {
+      const data = line.split(',');
+      csvData.push({
+        serialNumber: data[0],
+        productName: data[1],
+        inputImageUrls: data[2].split(';')
+      });
+    });
+
+    const products = await Product.insertMany(csvData);
+    const requests = await Request.insertMany(products.map((product) => ({ requestId, productId: product._id, status: 'pending' })));
+
+    res.status(201).send({ requestId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
+});
