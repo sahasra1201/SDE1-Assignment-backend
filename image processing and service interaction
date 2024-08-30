@@ -1,0 +1,19 @@
+const axios = require('axios');
+const sharp = require('sharp');
+
+const processImage = async (imageUrl) => {
+  try {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const buffer = Buffer.from(response.data, 'binary');
+
+    const compressedBuffer = await sharp(buffer).jpeg({ quality: 50 }).toBuffer();
+    const compressedImageUrl = `https://example.com/compressed/${uuidv4()}.jpg`;
+
+    await axios.put(compressedImageUrl, compressedBuffer, { headers: { 'Content-Type': 'image/jpeg' } });
+
+    return compressedImageUrl;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
