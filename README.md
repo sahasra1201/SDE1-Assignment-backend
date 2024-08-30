@@ -1,6 +1,6 @@
 # SDE1-Assignment-backend
 
-# System Design
+### System Design
 1.Upload API: Accepts CSV files, validates the formatting, and returns a unique request ID.
 2.Image Processing Service: Asynchronously processes images by compressing them by 50% of their original quality.
 3.Database: Stores product data and tracks the status of each processing request.
