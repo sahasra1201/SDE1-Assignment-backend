@@ -1,0 +1,13 @@
+const { Worker } = require('worker_threads');
+
+const imageProcessingWorker = new Worker('./image-processing-worker.js');
+const webhookHandlingWorker = new Worker('./webhook-handling-worker.js');
+
+imageProcessingWorker.on('message', async (imageUrl) => {
+  const compressedImageUrl = await processImage(imageUrl);
+  webhookHandlingWorker.postMessage({ compressedImageUrl });
+});
+
+webhookHandlingWorker.on('message', async (compressedImageUrl) => {
+  await axios.post('https://example.com/webhook', { compressedImageUrl });
+});
