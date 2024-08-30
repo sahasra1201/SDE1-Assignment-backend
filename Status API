@@ -1,0 +1,18 @@
+const express = require('express');
+const router = express.Router();
+
+router.get('/status', async (req, res) => {
+  try {
+    const requestId = req.query.requestId;
+    const request = await Request.findOne({ requestId });
+
+    if (!request) {
+      return res.status(404).send({ message: 'Request not found' });
+    }
+
+    res.status(200).send({ status: request.status });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
+});
