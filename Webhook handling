@@ -1,0 +1,16 @@
+const express = require('express');
+const router = express.Router();
+
+router.post('/webhook', async (req, res) => {
+  try {
+    const { requestId, productId, outputImageUrl } = req.body;
+
+    const request = await Request.findOneAndUpdate({ requestId, productId }, { status: 'completed' });
+    const product = await Product.findOneAndUpdate({ _id: productId }, { $push: { outputImageUrls: outputImageUrl } });
+
+    res.status(200).send({ message: 'Webhook received successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
+});
